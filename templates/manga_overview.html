@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row text-center">
+        <ul class="list-inline">
+            <li class="list-inline-item"><strong>{{ manga.title }}</strong></li>
+            <li class="list-inline-item"><a href="{{ url_for('author_overview', id=manga_author.id) }}"> {{ manga_author.name }} </a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        {% for image in manga_images %}
+            {% if loop.index == 1 %}
+                {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
+                <img 
+                    id="img-{{loop.index}}" 
+                    class="img-responsive mx-auto d-block" 
+                    style="max-height: 85vh"
+                    src="{{ url_for('static', filename=image_path) }}" />
+            {% else %}
+                {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
+                <img 
+                    id="img-{{loop.index}}" 
+                    class="d-none img-responsive mx-auto" 
+                    style="max-height: 85vh"
+                    src="{{ url_for('static', filename=image_path) }}" />
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <ul class="pagination justify-content-center mt-3">
+        <li class="page-item disabled" id="prev-img"><a class="page-link" href="#">Previous</a></li>
+        {% for page in range(pages) %}
+            <li class="page-item {% if loop.index == 1 %} active {% endif %}" id="select-img-{{ loop.index }}" onclick="setActive({{ loop.index }})">
+                <a class="page-link" href="#">
+                    {{ loop.index }}
+                </a>
+            </li>
+        {% endfor %}
+        <li class="page-item" id="next-img"><a class="page-link" href="#">Next</a></li>
+    </ul>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+let currentImage = 1;
+
+$( "#prev-img" ).click(function() {
+    if (currentImage > 1) {
+        toggleActive(currentImage, currentImage-1);
+    }
+});
+
+$( "#next-img" ).click(function() {
+    if (currentImage < {{ pages }}) {
+        toggleActive(currentImage, currentImage+1);
+    }
+});
+
+function toggleActive(previousImageNumber, newImageNumber) {
+    currentImage = newImageNumber;
+    $( "#img-" + previousImageNumber ).toggleClass('d-none');
+    $( "#img-" + previousImageNumber ).toggleClass('d-block');
+    $( "#img-" + newImageNumber ).toggleClass('d-none');
+    $( "#img-" + newImageNumber ).toggleClass('d-block');
+    $( "#select-img-" + previousImageNumber ).toggleClass('active');
+    $( "#select-img-" + newImageNumber ).toggleClass('active');
+
+    
+    if (currentImage == 1 &&  $( "#prev-img" ).hasClass('disabled') == false)
+    {
+        $( "#prev-img" ).addClass('disabled');
+    } else {
+        $( "#prev-img" ).removeClass('disabled');
+    }
+
+    if (currentImage == {{ pages }} && $( "#next-img" ).hasClass('disabled') == false)
+    {
+        $( "#next-img" ).addClass('disabled');
+    } else {
+        $( "#next-img" ).removeClass('disabled');
+    }
+}
+
+function setActive(imageNumber) {
+    toggleActive(currentImage, imageNumber);
+}
+
+</script>
+{% endblock %}

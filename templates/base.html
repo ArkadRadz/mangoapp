@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% block title %}
+      <title>Mangoapp</title>
+    {% endblock %}
+
+    <header>{% block header %}{% endblock %}</header>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename="assets/css/bootstrap.min.css") }}" rel="stylesheet" />
+  </head>
+  <body class="bg-dark text-white">
+    {% include "nav.html" %}
+
+    <main role="main" class="container">
+      {% for message in get_flashed_messages() %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %}
+    </main>
+
+    {% block content %}{% endblock %}
+
+    <script type="text/javascript" src="{{ url_for('static', filename="assets/js/jquery.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename="assets/js/bootstrap.bundle.min.js") }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

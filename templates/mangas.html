@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% with mangas=mangas %}
+        {% include "manga_list.html" %}
+    {% endwith %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row text-center">
+        <ul class="list-inline">
+            <li class="list-inline-item"><strong class="h1">{{ author.name }}</strong></li>
+        </ul>
+    </div>
+
+    {% with mangas=mangas %}
+        {% include "manga_list.html" %}
+    {% endwith %}
+{% endblock%}
