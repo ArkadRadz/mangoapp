@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-    {% for author in authors %}
-        <div> 
-            <a href="{{ url_for('author_overview', id=author.id) }}">{{ author.name }}</a>
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"> 
+        <table class="table table-bordered table-hover table-striped table-dark">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col"># of works</th>
+                <th scope="col">Link</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for author in authors.items %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{author.name}}</td>
+                    <td>{{author.manga|length}}</td>
+                    <td><a href="{{ url_for('author_overview', id=author.id) }}">LINK</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
         </div>
-    {% endfor %}
+    </div>
+    {% with elements=authors, element_url=url_for('authors') %}
+        {% include "pagination.html" %}
+    {% endwith %}
 {% endblock %}

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    {% with mangas=mangas %}
+    {% with mangas=mangas.items %}
         {% include "manga_list.html" %}
+    {% endwith %}
+
+    {% with elements=mangas, element_url=url_for('mangas') %}
+        {% include "pagination.html" %}
     {% endwith %}
 {% endblock %}

@@ -1,0 +1,35 @@
+    <div class="text-center">
+        Displaying {{ (elements.items|first).id }} - {{ (elements.items|last).id }} / {{ elements.total }}
+    </div>
+    <ul class="pagination pagination-lg justify-content-center">
+        <li class="page-item {% if elements.page == 1 %} disabled {% endif %}">
+            {% if elements.prev_num != None %}
+                {% set prev_page_url = element_url + "?page=" + elements.prev_num|string %}
+            {% else %}
+                {% set prev_page_url = "#" %}
+            {% endif %}
+            <a class="page-link" href="{{ prev_page_url }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+            </a>
+        </li>
+        {% for page_number in range(elements.pages) %}
+            <li class="page-item {% if elements.page == loop.index %} active {% endif %}">
+                <a class="page-link" 
+                    href="{{ element_url }}?page={{loop.index}}">
+                    {{ loop.index }}
+                </a>
+            </li>
+        {% endfor %}
+        <li class="page-item {% if elements.page == elements.pages %} disabled {% endif %}">
+            {% if elements.next_num != None %}
+                {% set next_page_url = element_url + "?page=" + elements.next_num|string %}
+            {% else %}
+                {% set next_page_url = "#" %}
+            {% endif %}
+            <a class="page-link" href="{{ next_page_url }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>

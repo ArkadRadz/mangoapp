@@ -1,11 +1,10 @@
-import tkinter as tk
-from tkinter import filedialog
 import os
 import re
 from flask import Flask, render_template, request, session
 from flask.helpers import flash, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+from tqdm import tqdm
 from werkzeug.utils import redirect, send_from_directory
 
 app = Flask(__name__)
@@ -37,11 +36,6 @@ class Author(db.Model):
 def scan_dir_for_mangas(dir_path = None):
     db.create_all()
 
-    if dir_path == None:
-        root = tk.Tk()
-        root.withdraw()
-        dir_path = filedialog.askdirectory()
-
     mangas = []
 
     try:
@@ -51,10 +45,14 @@ def scan_dir_for_mangas(dir_path = None):
         return mangas
 
     total_count = os.listdir(dir_path).__len__()
-
-    for index, element in enumerate(elements):
-        print(f"Currently scanning element {index}/{total_count} {element.path}")
-        sub_elements = os.scandir(element.path)
+    tqdm_elements = tqdm(elements, total=total_count)
+    for element in tqdm_elements:
+        tqdm_elements.set_postfix({'current_element': element.name})
+        try:
+            sub_elements = os.scandir(element.path)
+        except FileNotFoundError:
+            print(f"I couldn't process directory: {element.path}")
+            continue
 
         regex_author = re.search("\[(.*?)\]", element.name)
 
@@ -107,13 +105,14 @@ def home():
 
 @app.route('/mangas')
 def mangas():
-    mangas = db.session.query(Manga).order_by(Manga.id)
-    return render_template('mangas.html', mangas=mangas)
+    manga_query = db.session.query(Manga).order_by(Manga.id).paginate(per_page=9)
+
+    return render_template('mangas.html', mangas=manga_query)
 
 @app.route('/authors')
 def authors():
-    authors = db.session.query(Author).order_by(Author.id)
-    return render_template('authors.html', authors=authors)
+    author_query = db.session.query(Author).order_by(Author.id).paginate(per_page=10)
+    return render_template('authors.html', authors=author_query)
 
 @app.route('/author/<id>')
 def author_overview(id):
@@ -129,16 +128,16 @@ def manga_overview(id):
     pages = manga_images.count()
     return render_template('manga_overview.html', manga=manga, manga_images=manga_images, manga_author=manga_author, pages=pages)
 
-@app.route('/testing')
-def test_route():
-    return render_template('test.html')
+@app.route('/scan')
+def scan():
+    return render_template('scan.html')
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
     dir_path = request.form['dirpath']
     print(f"Attempting to scan {dir_path} for mangas")
     count = scan_dir_for_mangas(dir_path)
-    return redirect(url_for('test_route'))
+    return redirect(url_for('scan'))
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
