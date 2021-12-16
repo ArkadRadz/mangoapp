@@ -1,5 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-    
+
+    <div class="row text-center">
+        <ul class="list-inline">
+            <li class="list-inline-item"><strong>{{ manga.title }}</strong></li>
+        </ul>
+    </div>
+
+    {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
+
+    <img 
+    class="img-responsive mx-auto d-block" 
+    style="max-height: 85vh"
+    src="{{ url_for('static', filename=image_path) }}" />
+
+    {% set target_url = url_for('manga_overview', id=manga.id)%}
+        {% with elements=manga_images, element_url=target_url %}
+        {% include "pagination.html" %}
+    {% endwith %}
 {% endblock %}
