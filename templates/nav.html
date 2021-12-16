@@ -28,6 +28,16 @@
           </a>
         </li>
       </ul>
+      <form action="{{ url_for('search') }}" method="GET">
+        <div class="row">
+          <div class="col-md-8 px-0 mx-0">
+            <input class="form-control" type="text" name="query" id="query" placeholder="Search..">
+          </div>
+          <div class="col-md-2 px-0 mx-0">
+            <button type="submit" class="btn btn-primary btn-square"><i class="fa fa-search fa-lg"></i></button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </nav>

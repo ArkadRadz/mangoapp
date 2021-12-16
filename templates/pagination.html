@@ -16,7 +16,7 @@
 <ul class="pagination pagination-lg justify-content-center mt-3">
     <li class="page-item {% if elements.has_prev == False %} disabled {% endif %}">
         <a href="{{ first_page_url }}" class="page-link">
-            <span class="sr-only">First page</span>
+            <span>First page</span>
         </a>
     </li>
     <li class="page-item {% if elements.has_prev == False %} disabled {% endif %}">
@@ -68,7 +68,34 @@
     </li>
     <li class="page-item {% if elements.has_next == False %} disabled {% endif %}">
         <a href="{{ last_page_url }}" class="page-link">
-            <span class="sr-only">Last page</span>
+            <span>Last page</span>
         </a>
     </li>
 </ul>
+
+
+{% block scripts %}
+<script>
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+    e = e || window.event;
+
+    if (e.keyCode == '37') {
+        moveToPrev();
+    }
+    else if (e.keyCode == '39') {
+        moveToNext();
+    }
+
+}
+
+function moveToNext() {
+    window.location.href = "{{ next_page_url }}";
+}
+
+function moveToPrev() {
+    window.location.href = "{{ prev_page_url }}";
+}
+</script>
+{% endblock %}

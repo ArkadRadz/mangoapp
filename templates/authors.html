@@ -8,16 +8,18 @@
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
                 <th scope="col"># of works</th>
-                <th scope="col">Link</th>
                 </tr>
             </thead>
             <tbody>
             {% for author in authors.items %}
                 <tr>
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{author.name}}</td>
+                    <th scope="row">{{ author.id }}</th>
+                    <td>
+                        <a class="link-light" href="{{ url_for('author_overview', id=author.id) }}">
+                        {{author.name}}
+                        </a>
+                    </td>
                     <td>{{author.manga|length}}</td>
-                    <td><a href="{{ url_for('author_overview', id=author.id) }}">LINK</a></td>
                 </tr>
             {% endfor %}
             </tbody>

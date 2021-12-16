@@ -19,6 +19,19 @@ cache = Cache(app)
 def home():
     return render_template('main.html')
 
+@app.route('/search')
+def search():
+    mangas = None
+    authors = None
+
+    query = request.args.get('query')
+
+    if query is not None:
+        mangas = db.session.query(Manga).filter(Manga.title.like('%' + query + '%')).all()
+        authors = db.session.query(Author).filter(Author.name.like('%' + query + '%')).all()
+
+    return render_template('search.html', mangas=mangas, authors=authors)
+
 @app.route('/mangas', defaults={'current_page': 1})
 @app.route('/mangas/<int:current_page>')
 @cache.cached(timeout=50)
@@ -26,20 +39,6 @@ def mangas(current_page):
     manga_query = db.session.query(Manga).order_by(Manga.id).paginate(page=current_page, per_page=9)
 
     return render_template('mangas.html', mangas=manga_query)
-
-@app.route('/authors', defaults={'current_page': 1})
-@app.route('/authors/<int:current_page>')
-def authors(current_page):
-    author_query = db.session.query(Author).order_by(Author.id).paginate(page=current_page, per_page=10)
-
-    return render_template('authors.html', authors=author_query)
-
-@app.route('/author/<int:id>')
-def author_overview(id):
-    author = db.session.query(Author).get(id)
-    author_mangas = db.session.query(Manga).filter_by(author_id=author.id)
-
-    return render_template('author_overview.html', author=author, mangas=author_mangas)
 
 @app.route('/manga/<int:id>')
 @cache.cached(timeout=50)
@@ -58,6 +57,20 @@ def manga_page(manga_id, page_number):
     manga_images = db.session.query(Image).filter_by(manga_id=manga_result.id).paginate(page=page_number, per_page=1)
 
     return render_template('manga_page.html', manga=manga_result, image=image, manga_images=manga_images)
+
+@app.route('/authors', defaults={'current_page': 1})
+@app.route('/authors/<int:current_page>')
+def authors(current_page):
+    author_query = db.session.query(Author).order_by(Author.id).paginate(page=current_page, per_page=25)
+
+    return render_template('authors.html', authors=author_query)
+
+@app.route('/author/<int:id>')
+def author_overview(id):
+    author = db.session.query(Author).get(id)
+    author_mangas = db.session.query(Manga).filter_by(author_id=author.id)
+
+    return render_template('author_overview.html', author=author, mangas=author_mangas)
 
 @app.route('/scan')
 def scan():
