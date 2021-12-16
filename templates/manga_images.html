@@ -6,7 +6,7 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
                             <a href="{{ url_for('manga_page', manga_id=image.manga_id, page_number=loop.index) }}">
-                                {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
+                                {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
                                 <img class="img-fluid" style="filter: blur(100px)" src="{{ url_for('static', filename=image_path) }}"/>
                             </a>
                         </div>

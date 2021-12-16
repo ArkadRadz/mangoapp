@@ -2,6 +2,11 @@ from setup import *
 import os
 import re
 from flask.helpers import flash
+from tqdm import tqdm
+from author import Author
+from manga import Manga
+from image import Image
+from thumbnail_maker import create_thumbnail_for_image
 
 def scan_dir_for_mangas(dir_path = None):
     db.create_all()
@@ -60,6 +65,7 @@ def scan_dir_for_mangas(dir_path = None):
                 image.path = sub_element.name
 
                 manga.images.append(image)
+                create_thumbnail_for_image(sub_element)
 
         author.manga.append(manga)
         db.session.add_all([author, manga])

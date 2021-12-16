@@ -1,15 +1,19 @@
 from flask import render_template, request, session
 from flask.helpers import url_for
 from flask_session import Session
-from tqdm import tqdm
 from werkzeug.utils import redirect
 from setup import *
 from manga import Manga
 from author import Author
 from image import Image
 from manga_scanner import scan_dir_for_mangas
+from flask_caching import Cache
 
-# scan_dir_for_mangas()
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['CACHE_TYPE'] = 'SimpleCache'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+cache = Cache(app)
 
 @app.route('/')
 def home():
@@ -17,6 +21,7 @@ def home():
 
 @app.route('/mangas', defaults={'current_page': 1})
 @app.route('/mangas/<int:current_page>')
+@cache.cached(timeout=50)
 def mangas(current_page):
     manga_query = db.session.query(Manga).order_by(Manga.id).paginate(page=current_page, per_page=9)
 
@@ -37,18 +42,20 @@ def author_overview(id):
     return render_template('author_overview.html', author=author, mangas=author_mangas)
 
 @app.route('/manga/<int:id>')
+@cache.cached(timeout=50)
 def manga_overview(id):
     manga = db.session.query(Manga).get(id)
-    manga_images  = db.session.query(Image).filter_by(manga_id=manga.id)
+    manga_images = db.session.query(Image).filter_by(manga_id=manga.id)
     manga_author = db.session.query(Author).get(manga.author_id)
 
     return render_template('manga_overview.html', manga=manga, manga_images=manga_images, manga_author=manga_author)
 
 @app.route('/manga/<int:manga_id>/<int:page_number>')
+@cache.cached(timeout=50)
 def manga_page(manga_id, page_number):
     manga_result = db.session.query(Manga).get(manga_id)
     image = manga_result.images[page_number - 1]
-    manga_images  = db.session.query(Image).filter_by(manga_id=manga_result.id).paginate(page=page_number, per_page=1)
+    manga_images = db.session.query(Image).filter_by(manga_id=manga_result.id).paginate(page=page_number, per_page=1)
 
     return render_template('manga_page.html', manga=manga_result, image=image, manga_images=manga_images)
 
@@ -64,10 +71,18 @@ def handle_data():
 
     return redirect(url_for('scan'))
 
-if __name__ == '__main__':
-    app.secret_key = 'super secret key'
-    app.config['SESSION_TYPE'] = 'filesystem'
+@app.template_filter()
+def convert_to_thumbnail(image_name):
+    if '.png' in image_name:
+        return image_name.replace('.png', '-t.png')
+    elif '.jpeg' in image_name:
+        return image_name.replace('.jpeg', '-t.jpeg')
+    elif '.jpg' in image_name:
+        return image_name.replace('.jpg', '-t.jpg')
 
+    return image_name
+
+if __name__ == '__main__':
     sess = Session()
     sess.init_app(app)
     app.run(debug=True, host="0.0.0.0", port="9876")
