@@ -1,12 +1,8 @@
 import os
 from flask.helpers import flash
 from PIL import Image
-import pathlib
-import sys
 
-from flask.json.tag import TaggedJSONSerializer
-
-def scan_dir_for_mangas(dir_path = None):
+def scan_dir_for_mangas(dir_path = None, root_path = None):
     mangas = []
 
     try:
@@ -20,13 +16,13 @@ def scan_dir_for_mangas(dir_path = None):
 
                 for sub_element in sub_elements:
                     if sub_element.is_file:
-                        create_thumbnail_for_image(sub_element)
+                        create_thumbnail_for_image(sub_element, root_path)
 
     except FileNotFoundError:
         flash(f"Unknown path {dir_path}")
         return mangas
 
-def create_thumbnail_for_image(sub_element):
+def create_thumbnail_for_image(sub_element, root_path = None):
     target_path = sub_element.path.replace(sub_element.name, '')
 
     if '-t.' in sub_element.path:
@@ -43,7 +39,7 @@ def create_thumbnail_for_image(sub_element):
     image_size = image.size
     image.thumbnail((image_size[0] * 0.25, image_size[1] * 0.25))
 
-    static_path = target_path.rsplit(os.sep)[:-3]
+    static_path = [root_path, 'static']
     manga_name = target_path.rsplit(os.sep)[-2]
     static_path.append('thumbnails')
 

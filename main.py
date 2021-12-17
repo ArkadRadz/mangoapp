@@ -1,4 +1,4 @@
-from flask import render_template, request, session
+from flask import render_template, request
 from flask.helpers import url_for
 from flask_session import Session
 from werkzeug.utils import redirect
@@ -81,7 +81,7 @@ def scan():
 def handle_data():
     dir_path = request.form['dirpath']
     print(f"Attempting to scan {dir_path} for mangas")
-    count = scan_dir_for_mangas(dir_path)
+    count = scan_dir_for_mangas(dir_path, app.root_path)
 
     return redirect(url_for('scan'))
 

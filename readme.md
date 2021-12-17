@@ -16,3 +16,4 @@
 5. Improve project structure:
     * Remove JS from HTML into separate files
     * Can pagination be turned into macro?
+6. Is it possible for images to be stored outside static folder?

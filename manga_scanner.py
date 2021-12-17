@@ -8,7 +8,7 @@ from manga import Manga
 from image import Image
 from thumbnail_maker import create_thumbnail_for_image
 
-def scan_dir_for_mangas(dir_path = None):
+def scan_dir_for_mangas(dir_path = None, root_path = None):
     db.create_all()
 
     mangas = []
@@ -65,7 +65,7 @@ def scan_dir_for_mangas(dir_path = None):
                 image.path = sub_element.name
 
                 manga.images.append(image)
-                create_thumbnail_for_image(sub_element)
+                create_thumbnail_for_image(sub_element, root_path)
 
         author.manga.append(manga)
         db.session.add_all([author, manga])
