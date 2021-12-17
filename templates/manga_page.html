@@ -3,9 +3,9 @@
 {% block content %}
 
     <div class="row text-center mx-auto">
-        <ul class="list-inline">
-            <li class="list-inline-item"><strong>{{ manga.title }}</strong></li>
-        </ul>
+        <span>Reading <strong>{{ manga.title }}</strong> </br>
+            Click <a class="link" href="{{ url_for('manga_overview', id=manga.id) }}">here</a> to return to manga summary
+        </span>
     </div>
 
     {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
