@@ -8,6 +8,7 @@ from author import Author
 from image import Image
 from manga_scanner import scan_dir_for_mangas
 from flask_caching import Cache
+from time import strftime
 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -94,6 +95,14 @@ def convert_to_thumbnail(image_name):
         return image_name.replace('.jpg', '-t.jpg')
 
     return image_name
+
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    with open("test.txt", "a") as myfile:
+        myfile.write(f'{timestamp} {request.remote_addr} {request.method} {request.scheme} {request.full_path} {response.status} \n')
+
+    return response
 
 if __name__ == '__main__':
     sess = Session()
