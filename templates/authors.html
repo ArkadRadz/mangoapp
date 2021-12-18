@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+
+{% import 'pagination.html' as pagination %}
+
 {% block content %}
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"> 
@@ -26,7 +29,6 @@
         </table>
         </div>
     </div>
-    {% with elements=authors, element_url=url_for('authors') %}
-        {% include "pagination.html" %}
-    {% endwith %}
+
+    {{ pagination.render_pagination(authors, url_for('authors') + "/") }}
 {% endblock %}

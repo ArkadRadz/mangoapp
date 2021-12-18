@@ -54,4 +54,4 @@ def create_thumbnail_for_image(sub_element, root_path = None):
     if os.path.isfile(image_path):
         return
 
-    image.save(image_path)
+    image.save(image_path, optimize=True, quality=80)

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% import 'pagination.html' as pagination %}
+
 {% block content %}
     <div class="row text-center">
         <ul class="list-inline">
@@ -8,8 +10,9 @@
         </ul>
     </div>
 
-    {% with images=manga_images %}
+    {% with images=manga_images.items %}
         {% include "manga_images.html" %}
     {% endwith %}
 
+    {{ pagination.render_pagination(manga_images, url_for('manga_overview', id=manga.id)) }}
 {% endblock %}

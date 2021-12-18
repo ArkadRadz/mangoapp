@@ -1,24 +1,19 @@
+{% import 'macros.html' as macro %}
+
 <div class="album py-5">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             {% for manga in mangas %}
-                <div class="col">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            {% set image = manga.images|first() %}
-                            {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
-                            <img class="img-fluid" style="filter: blur(100px)" src="{{ url_for('static', filename=image_path) }}"/>
-                            
-                            <p class="card-text text-dark">{{ manga.title }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                <a href="{{ url_for('manga_overview', id=manga.id) }}" class="btn btn-secondary">View</a>
-                                </div>
-                                <small class="text-muted">{{ manga.images|length }} pages</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% set image = manga.images|first() %}
+                {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
+                {% set button_path = url_for('manga_overview', id=manga.id) %}
+                {% set pages_amount = manga.images|length %}
+
+                {{ macro.render_manga_card(
+                    image_path=image_path, 
+                    button_path=button_path, 
+                    manga_title=manga.title, 
+                    pages_amount=pages_amount) }}
             {% endfor %}
         </div>
     </div>

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% import 'pagination.html' as pagination %}
+
 {% block content %}
     <div class="row text-center">
         <ul class="list-inline">
@@ -7,7 +9,9 @@
         </ul>
     </div>
 
-    {% with mangas=mangas %}
+    {% with mangas=mangas.items %}
         {% include "manga_list.html" %}
     {% endwith %}
+
+    {{ pagination.render_pagination(mangas, url_for('author_overview', id=author.id)) }}
 {% endblock%}

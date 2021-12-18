@@ -8,7 +8,6 @@ from author import Author
 from image import Image
 from manga_scanner import scan_dir_for_mangas
 from flask_caching import Cache
-from time import strftime
 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -26,12 +25,15 @@ def search():
     authors = None
 
     query = request.args.get('query')
+    current_page = request.args.get('page')
+
+    if current_page is None:
+        current_page = 1
 
     if query is not None:
-        mangas = db.session.query(Manga).filter(Manga.title.like('%' + query + '%')).all()
-        authors = db.session.query(Author).filter(Author.name.like('%' + query + '%')).all()
+        mangas = db.session.query(Manga).filter(Manga.title.like('%' + query + '%')).paginate(page=current_page, per_page=9)
 
-    return render_template('search.html', mangas=mangas, authors=authors)
+    return render_template('search.html', mangas=mangas, query=query)
 
 @app.route('/mangas', defaults={'current_page': 1})
 @app.route('/mangas/<int:current_page>')
@@ -41,16 +43,18 @@ def mangas(current_page):
 
     return render_template('mangas.html', mangas=manga_query)
 
-@app.route('/manga/<int:id>')
+@app.route('/manga/<int:id>', defaults={'current_page': 1})
+@app.route('/manga/<int:id>/<int:current_page>')
 @cache.cached(timeout=50)
-def manga_overview(id):
+def manga_overview(id, current_page):
     manga = db.session.query(Manga).get(id)
-    manga_images = db.session.query(Image).filter_by(manga_id=manga.id)
+    manga_images = db.session.query(Image).filter_by(manga_id=manga.id).paginate(page=current_page, per_page=30)
     manga_author = db.session.query(Author).get(manga.author_id)
 
     return render_template('manga_overview.html', manga=manga, manga_images=manga_images, manga_author=manga_author)
 
-@app.route('/manga/<int:manga_id>/<int:page_number>')
+@app.route('/manga/read/<int:manga_id>', defaults={'page_number': 1}, strict_slashes=False)
+@app.route('/manga/read/<int:manga_id>/<int:page_number>')
 @cache.cached(timeout=50)
 def manga_page(manga_id, page_number):
     manga_result = db.session.query(Manga).get(manga_id)
@@ -61,15 +65,18 @@ def manga_page(manga_id, page_number):
 
 @app.route('/authors', defaults={'current_page': 1})
 @app.route('/authors/<int:current_page>')
+@cache.cached(timeout=50)
 def authors(current_page):
     author_query = db.session.query(Author).order_by(Author.id).paginate(page=current_page, per_page=25)
 
     return render_template('authors.html', authors=author_query)
 
-@app.route('/author/<int:id>')
-def author_overview(id):
+@app.route('/author/<int:id>', defaults={'current_page': 1}, strict_slashes=False)
+@app.route('/author/<int:id>/<int:current_page>')
+@cache.cached(timeout=50)
+def author_overview(id, current_page):
     author = db.session.query(Author).get(id)
-    author_mangas = db.session.query(Manga).filter_by(author_id=author.id)
+    author_mangas = db.session.query(Manga).filter_by(author_id=author.id).paginate(page=current_page, per_page=9)
 
     return render_template('author_overview.html', author=author, mangas=author_mangas)
 
@@ -95,14 +102,6 @@ def convert_to_thumbnail(image_name):
         return image_name.replace('.jpg', '-t.jpg')
 
     return image_name
-
-@app.after_request
-def after_request(response):
-    timestamp = strftime('[%Y-%b-%d %H:%M]')
-    with open("test.txt", "a") as myfile:
-        myfile.write(f'{timestamp} {request.remote_addr} {request.method} {request.scheme} {request.full_path} {response.status} \n')
-
-    return response
 
 if __name__ == '__main__':
     sess = Session()

@@ -9,11 +9,9 @@
 3. Add metadata support
     * Add metadata scanners as plugins
     * Add support for searching for metadata
-4. Improve search:
-    * Combine results?
-    * Search only artists?
-    * Add pagination
-5. Improve project structure:
+4. Improve project structure:
     * Remove JS from HTML into separate files
     * Can pagination be turned into macro?
-6. Is it possible for images to be stored outside static folder?
+5. Is it possible for images to be stored outside static folder?
+6. Add fit to width/fit to height/original size to viewer
+7. Add how many results per page should be visible

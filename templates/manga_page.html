@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% import 'pagination.html' as pagination %}
+
 {% block content %}
 
     <div class="row text-center mx-auto">
@@ -14,10 +16,8 @@
     class="img-responsive mx-auto d-block" id="current_img"
     src="{{ url_for('static', filename=image_path) }}" />
 
-    {% set target_url = url_for('manga_overview', id=manga.id)%}
-        {% with elements=manga_images, element_url=target_url %}
-        {% include "pagination.html" %}
-    {% endwith %}
+    {% set target_url = url_for('manga_page', manga_id=manga.id) %}
+    {{ pagination.render_pagination(manga_images, target_url) }}
 
     <script>
         document.getElementById('current_img').onclick = function clickEvent(e) {

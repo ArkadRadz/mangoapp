@@ -1,14 +1,16 @@
-{% set first_page_url = element_url + "/" + 1|string %}
-{% set last_page_url = element_url + "/" + elements.pages|string %}
+{% macro render_pagination(elements, element_url) %}
+
+{% set first_page_url = element_url + 1|string %}
+{% set last_page_url = element_url + elements.pages|string %}
 
 {% if elements.prev_num != None %}
-    {% set prev_page_url = element_url + "/" + elements.prev_num|string %}
+    {% set prev_page_url = element_url + elements.prev_num|string %}
 {% else %}
     {% set prev_page_url = "#" %}
 {% endif %}
 
 {% if elements.next_num != None %}
-    {% set next_page_url = element_url + "/" + elements.next_num|string %}
+    {% set next_page_url = element_url + elements.next_num|string %}
 {% else %}
     {% set next_page_url = "#" %}
 {% endif %}
@@ -31,7 +33,7 @@
                 {% for page_number in range(elements.pages) %}
                     <li class="page-item {% if elements.page == loop.index %} active {% endif %}">
                         <a class="page-link" 
-                            href="{{ element_url }}/{{loop.index}}">
+                            href="{{ element_url }}{{loop.index}}">
                             {{ loop.index }}
                         </a>
                     </li>
@@ -40,7 +42,7 @@
                 {% if elements.prev_num != None %}
                     <li class="page-item">
                         <a class="page-link" 
-                            href="{{ element_url }}/{{ elements.prev_num }}">
+                            href="{{ element_url }}{{ elements.prev_num }}">
                             {{ elements.prev_num }}
                         </a>
                     </li>
@@ -48,7 +50,7 @@
 
                 <li class="page-item active">
                     <a class="page-link" 
-                        href="{{ element_url }}/{{ elements.page }}">
+                        href="{{ element_url }}{{ elements.page }}">
                         {{ elements.page }}
                     </a>
                 </li>   
@@ -56,7 +58,7 @@
                 {% if elements.next_num != None %}
                     <li class="page-item">
                         <a class="page-link" 
-                            href="{{ element_url }}/{{ elements.next_num }}">
+                            href="{{ element_url }}{{ elements.next_num }}">
                             {{ elements.next_num }}
                         </a>
                     </li>
@@ -83,8 +85,6 @@
     </div>
 </div>
 
-
-{% block scripts %}
 <script>
 document.onkeydown = checkKey;
 
@@ -113,10 +113,11 @@ function moveToPage(minPage, maxPage) {
     let targetPageNumber = parseInt(targetPage, 10);
 
     if (targetPageNumber != NaN && targetPageNumber >= minPage && targetPageNumber <= maxPage) {
-        window.location.href = '{{ element_url + "/" }}' + targetPageNumber;
+        window.location.href = '{{ element_url }}' + targetPageNumber;
     } else {
         alert('Invalid value provided');
     }
 }
 </script>
-{% endblock %}
+
+{% endmacro %}

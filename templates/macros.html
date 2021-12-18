@@ -1,0 +1,39 @@
+{% macro render_manga_card(
+    image_path, 
+    button_path, 
+    manga_title, 
+    pages_amount) %}
+<div class="col">
+    <div class="card shadow-sm h-100">
+        {{ render_image(image_path) }}
+
+        {{ render_manga_details(button_path, manga_title, pages_amount) }}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_image_link_card(image_path, image_size, link_path) %}
+<div class="col">
+    <div class="card shadow-sm h-100">
+        <a href="{{ link_path }}">
+            {{ render_image(image_path, image_size) }}
+        </a>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_image(image_path, image_height = '45vh') %}
+<img class="card-img-top" 
+style="height: {{ image_height }}"
+src="{{ url_for('static', filename=image_path) }}"/>
+{% endmacro %}
+
+{% macro render_manga_details(button_path, manga_title, pages_amount) %}
+<div class="card-body bg-secondary">
+    <p class="card-title text-light ms-2">{{ manga_title }}</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{{ button_path }}" class="btn btn-dark">View</a>
+    <small class="text-white me-2">{{ pages_amount }} pages</small>
+    </div>
+</div>
+{% endmacro %}
