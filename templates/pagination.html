@@ -17,12 +17,7 @@
 
 <div class="container">
     <div class="row">
-        <ul class="pagination pagination-lg justify-content-center mt-3 mb-1" id="pageList">
-            <li class="page-item {% if elements.has_prev == False %}disabled{% endif %}">
-                <a href="{{ first_page_url }}" class="page-link">
-                    <span>First page</span>
-                </a>
-            </li>
+        <ul class="pagination pagination-lg flex-wrap justify-content-center mt-3" id="pageList">
             <li class="page-item {% if elements.has_prev == False %}disabled{% endif %}">
                 <a class="page-link" href="{{ prev_page_url }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
@@ -70,18 +65,27 @@
                 <span class="sr-only">Next</span>
                 </a>
             </li>
-            <li class="page-item {% if elements.has_next == False %}disabled{% endif %}">
-                <a href="{{ last_page_url }}" class="page-link">
-                    <span>Last page</span>
-                </a>
-            </li>
         </ul>
     </div>
-    <div class="row text-center justify-content-center">
-        <button type="button" onclick="moveToPage(1, {{ elements.pages }})"
-        class="btn btn-light text-primary btn-lg w-50">
-            Navigate to page
-        </button>
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col">
+            <a href="{{ first_page_url }}" 
+            class="btn btn-light text-primary btn-lg w-100" {% if elements.has_prev == False %}disabled{% endif %}>
+                <span>First page</span>
+            </a>
+        </div>
+        <div class="col">
+            <button type="button" onclick="moveToPage(1, {{ elements.pages }})"
+            class="btn btn-light text-primary btn-lg w-100">
+                Navigate to page
+            </button>
+        </div>
+        <div class="col">
+            <a href="{{ last_page_url }}" 
+            class="btn btn-light text-primary btn-lg w-100" {% if elements.has_next == False %}disabled{% endif %}>
+                <span>Last page</span>
+            </a>
+        </div>
     </div>
 </div>
 

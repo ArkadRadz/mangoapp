@@ -7,7 +7,7 @@
             {% set page_path = url_for('manga_page', manga_id=image.manga_id, page_number=loop.index) %}
             {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
 
-            {{ macro.render_image_link_card(image_path, '30vh', page_path) }}
+            {{ macro.render_image_link_card(image_path, '25vh', page_path) }}
 
             {% endfor %}
         </div>

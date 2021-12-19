@@ -22,7 +22,6 @@ def home():
 @app.route('/search')
 def search():
     mangas = None
-    authors = None
 
     query = request.args.get('query')
     current_page = request.args.get('page')
@@ -35,9 +34,15 @@ def search():
 
     return render_template('search.html', mangas=mangas, query=query)
 
+@app.route('/clear-cache')
+def clear_cache():
+    cache.init_app(app, config=app.config)
+
+    with app.app_context():
+        cache.clear()
+
 @app.route('/mangas', defaults={'current_page': 1})
 @app.route('/mangas/<int:current_page>')
-@cache.cached(timeout=50)
 def mangas(current_page):
     manga_query = db.session.query(Manga).order_by(Manga.id).paginate(page=current_page, per_page=9)
 
@@ -45,7 +50,6 @@ def mangas(current_page):
 
 @app.route('/manga/<int:id>', defaults={'current_page': 1})
 @app.route('/manga/<int:id>/<int:current_page>')
-@cache.cached(timeout=50)
 def manga_overview(id, current_page):
     manga = db.session.query(Manga).get(id)
     manga_images = db.session.query(Image).filter_by(manga_id=manga.id).paginate(page=current_page, per_page=30)
@@ -55,7 +59,6 @@ def manga_overview(id, current_page):
 
 @app.route('/manga/read/<int:manga_id>', defaults={'page_number': 1}, strict_slashes=False)
 @app.route('/manga/read/<int:manga_id>/<int:page_number>')
-@cache.cached(timeout=50)
 def manga_page(manga_id, page_number):
     manga_result = db.session.query(Manga).get(manga_id)
     image = manga_result.images[page_number - 1]
@@ -65,7 +68,6 @@ def manga_page(manga_id, page_number):
 
 @app.route('/authors', defaults={'current_page': 1})
 @app.route('/authors/<int:current_page>')
-@cache.cached(timeout=50)
 def authors(current_page):
     author_query = db.session.query(Author).order_by(Author.id).paginate(page=current_page, per_page=25)
 
@@ -73,7 +75,7 @@ def authors(current_page):
 
 @app.route('/author/<int:id>', defaults={'current_page': 1}, strict_slashes=False)
 @app.route('/author/<int:id>/<int:current_page>')
-@cache.cached(timeout=50)
+
 def author_overview(id, current_page):
     author = db.session.query(Author).get(id)
     author_mangas = db.session.query(Manga).filter_by(author_id=author.id).paginate(page=current_page, per_page=9)

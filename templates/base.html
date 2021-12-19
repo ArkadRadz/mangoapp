@@ -12,8 +12,29 @@
     <link href="{{ url_for('static', filename="assets/css/bootstrap.min.css") }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename="assets/css/all.css") }}" rel="stylesheet" />
   </head>
-  <body class="bg-dark text-white">
-    {% include "nav.html" %}
+  <body class="bg-dark text-white"> 
+    <div class="top-0 start-0 position-fixed h-100">
+      <div class="position-sticky" style="z-index: 100">
+          <button class="btn btn-primary w-100" type="button" data-bs-toggle="collapse" onclick="setExpandedCookie()"
+          data-bs-target="#readerSidebar" aria-expanded="false" aria-controls="readerSidebar">
+              Open sidebar
+          </button>
+      </div>
+    
+      <div id="readerSidebar"
+      class="collapse-horizontal collapse position-sticky top-0 h-100 bg-black {% if request.cookies.get('show_sidebar') == 'true' %}show{% endif %}" >
+        <div class="h-100" style="width: 12vw;">
+          <div class="container d-block">
+            {% include 'nav.html' %}
+
+            <hr/>
+
+            {% block additional_element %}
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
 
     <main role="main" class="container">
       {% for message in get_flashed_messages() %}
@@ -25,6 +46,17 @@
 
     <script type="text/javascript" src="{{ url_for('static', filename="assets/js/jquery.js") }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename="assets/js/bootstrap.bundle.min.js") }}"></script>
+
+    <script>
+      function setExpandedCookie() {
+        setTimeout(() => {
+          let isActive = document.getElementById('readerSidebar').classList.contains('show');
+          document.cookie = `show_sidebar=${isActive}; path=/`;
+          console.log(document.cookie);
+        }, 500);
+      }
+    </script>
+
     {% block scripts %}{% endblock %}
   </body>
 </html>

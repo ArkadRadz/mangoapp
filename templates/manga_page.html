@@ -3,21 +3,12 @@
 {% import 'pagination.html' as pagination %}
 
 {% block content %}
-
-    <div class="row text-center mx-auto">
-        <span>Reading <strong>{{ manga.title }}</strong> </br>
-            Click <a class="link" href="{{ url_for('manga_overview', id=manga.id) }}">here</a> to return to manga summary
-        </span>
-    </div>
-
+<div class="container" id="reader-container">
     {% set image_path = "mangas" + "/" + manga.dir_name + "/" + image.path %}
-
     <img 
-    class="img-responsive mx-auto d-block" id="current_img"
+    class="img-responsive mx-auto h-100 d-block" id="current_img"
     src="{{ url_for('static', filename=image_path) }}" />
-
-    {% set target_url = url_for('manga_page', manga_id=manga.id) %}
-    {{ pagination.render_pagination(manga_images, target_url) }}
+</div>
 
     <script>
         document.getElementById('current_img').onclick = function clickEvent(e) {
@@ -30,5 +21,108 @@
                 moveToNext();
             }
         }
+
+        function setCookie(cookieName, cookieValue) {
+            document.cookie = `${cookieName}=${cookieValue}`;
+        }
+
+        function setOriginalSizeValues() {
+            element = document.getElementById('reader-container');
+
+            if (element.style['height'] == '100vh') {
+                element.style['height'] = '';
+            }
+
+            if (element.style['width'] == '100vw') {
+                element.style['width'] = '';
+            }
+        }
+
+        function setFitToHeightValues() {
+            element = document.getElementById('reader-container');
+            
+            if (element.style['width'] == '100vw') {
+                element.style['width'] = '';
+            }
+
+            if (element.style['height'] != '100vh') {
+                element.style['height'] = '100vh';
+            }
+        }
+
+        function fitToHeight() {
+            fitHeightElement = document.getElementById('fitHeightButton');
+            originalSizeElement = document.getElementById('originalSizeButton');
+
+            if (!fitHeightElement.hasAttribute('disabled')) {
+                fitHeightElement.setAttribute('disabled', '');
+                originalSizeElement.removeAttribute('disabled');
+                originalSizeElement.setAttribute('aria-pressed', 'false');
+                originalSizeElement.classList.remove('active');
+            }
+
+            setCookie('reader-image-type', 'fit-to-height');
+            setFitToHeightValues();
+        }
+
+        function originalSize() {
+            originalSizeElement = document.getElementById('originalSizeButton');
+            fitHeightElement = document.getElementById('fitHeightButton');
+
+            if (!originalSizeElement.hasAttribute('disabled')) {
+                originalSizeElement.setAttribute('disabled', '');
+                fitHeightElement.removeAttribute('disabled');
+                fitHeightElement.setAttribute('aria-pressed', 'false');
+                fitHeightElement.classList.remove('active');
+            }
+
+            setCookie('reader-image-type', 'original-size');
+            setOriginalSizeValues();
+        }
+
+        {% set request_image_type = request.cookies.get('reader-image-type') %}
+        var reader_image_type = '{{ request_image_type }}';
+
+        if (reader_image_type == 'original-size') {
+            originalSize();
+        } else if (reader_image_type == 'fit-to-height') {
+            fitToHeight();
+        }
+
     </script>
+{% endblock %}
+
+{% block additional_element %}
+
+    <div class="row text-center mx-auto">
+        <span>Reading <strong>{{ manga.title }}</strong> </br>
+            Click <a class="link" href="{{ url_for('manga_overview', id=manga.id) }}">here</a> to return to manga summary
+        </span>
+    </div>
+
+    {% set target_url = url_for('manga_page', manga_id=manga.id) + "/" %}
+    {{ pagination.render_pagination(manga_images, target_url) }}
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary mb-2 btn-lg h-100 w-100" onclick="fitToHeight()" id="fitHeightButton" data-bs-toggle="button">
+                <div class="row">
+                    <span class="text-center">Fit to height</span>
+                </div>
+                <div class="row">
+                    <i class="fas fa-arrows-alt-v"></i>
+                </div>
+            </button>
+        </div>
+        <div class="col">
+            <button class="btn btn-primary mb-2 btn-lg h-100 w-100" onclick="originalSize()" id="originalSizeButton" data-bs-toggle="button">
+                <div class="row">
+                    <span class="text-center">Original size</span>
+                </div>
+                <div class="row">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </div>
+            </button>
+        </div>
+    </div>
 {% endblock %}
