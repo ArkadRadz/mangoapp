@@ -27,7 +27,7 @@
       </div>
     
       <div id="readerSidebar"
-      class="collapse-horizontal collapse position-sticky top-0 h-100 bg-black {% if request.cookies.get('show_sidebar') == 'true' %}show{% endif %}" >
+      class="collapse-horizontal collapse position-sticky top-0 h-100 bg-black" >
         <div class="h-100" style="width: 12vw;">
           <div class="container d-block">
             {% include 'nav.html' %}
@@ -56,10 +56,22 @@
       function setExpandedCookie() {
         setTimeout(() => {
           let isActive = document.getElementById('readerSidebar').classList.contains('show');
-          document.cookie = `show_sidebar=${isActive}; path=/`;
-          console.log(document.cookie);
+          localStorage.setItem('show_sidebar', `${isActive}`);
         }, 500);
       }
+
+      $(document).ready(function() {
+        let show_sidebar = localStorage.getItem('show_sidebar');
+
+        if (show_sidebar === null) {
+          localStorage.setItem('show_sidebar', 'true');
+          document.getElementById('readerSidebar').classList.add('show');
+        }
+
+        if (show_sidebar == 'true') {
+          document.getElementById('readerSidebar').classList.add('show');
+        }
+      });
     </script>
 
     {% block scripts %}{% endblock %}

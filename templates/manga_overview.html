@@ -15,50 +15,13 @@
     {% endwith %}
 
     {{ pagination.render_pagination(manga_images, url_for('manga_overview', id=manga.id) + "/") }}
-
-    <script>
-        function showSpoilers() {
-            let images = document.getElementsByClassName("spoiler-image");
-
-            for (let image of images) { image.classList.remove('blur-image'); }
-
-            let hideButton = document.getElementById("hide-spoilers-button");
-
-            if (hideButton.classList.contains('disabled')) {
-                hideButton.classList.remove('disabled');
-            }
-
-        
-            let showButton = document.getElementById("show-spoilers-button");
-            showButton.classList.add('disabled');
-
-            document.cookie = 'spoilers=show';
-        }
-
-        function hideSpoilers() {
-            let images = document.getElementsByClassName("spoiler-image");
-
-            for (let image of images) { image.classList.add('blur-image'); }
-
-            let showButton = document.getElementById("show-spoilers-button");
-
-            if (showButton.classList.contains('disabled')) {
-                showButton.classList.remove('disabled');
-            }
-
-            let hideButton = document.getElementById("hide-spoilers-button");
-            hideButton.classList.add('disabled');
-            
-            document.cookie = 'spoilers=hide';
-        }
-    </script>
 {% endblock %}
 
 {% block additional_element %}
     <div class="row">
         <div class="col">
             <button 
-            class="btn btn-primary mb-2 btn-lg h-100 w-100 {% if request.cookies.get('spoilers') == 'show' %}disabled{% endif %}" 
+            class="btn btn-primary mb-2 btn-lg h-100 w-100" 
             onclick="showSpoilers()" id="show-spoilers-button">
                 <div class="row">
                     <span class="text-center">Show spoilers</span>
@@ -70,7 +33,7 @@
         </div>
         <div class="col">
             <button onclick="hideSpoilers()" id="hide-spoilers-button"
-            class="btn btn-primary mb-2 btn-lg h-100 w-100 {% if request.cookies.get('spoilers') == 'hide' %}disabled{% endif %}">
+            class="btn btn-primary mb-2 btn-lg h-100 w-100">
                 <div class="row">
                     <span class="text-center">Hide spoilers</span>
                 </div>
@@ -80,4 +43,64 @@
             </button>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function handleBlur(method) {
+        let images = document.getElementsByClassName("spoiler-image");
+
+        if (method === 'remove') {
+            for (let image of images) { image.classList.remove('blur-image'); }
+        } else if (method === 'add') {
+            for (let image of images) { image.classList.add('blur-image'); }
+        }
+    }
+
+    function showSpoilers() {
+        handleBlur('remove');
+
+        let hideButton = document.getElementById("hide-spoilers-button");
+
+        if (hideButton.classList.contains('disabled')) {
+            hideButton.classList.remove('disabled');
+        }
+
+        let showButton = document.getElementById("show-spoilers-button").classList.add('disabled');
+
+        localStorage.setItem('spoilers', 'show');
+    }
+
+    function hideSpoilers() {
+        handleBlur('add');
+
+        let showButton = document.getElementById("show-spoilers-button");
+
+        if (showButton.classList.contains('disabled')) {
+            showButton.classList.remove('disabled');
+        }
+
+        document.getElementById("hide-spoilers-button").classList.add('disabled');
+
+        localStorage.setItem('spoilers', 'hide');
+    }
+
+    $(document).ready(function () {
+        let spoilers = localStorage.getItem('spoilers');
+
+        switch (spoilers) {
+            case 'show':
+                document.getElementById('show-spoilers-button').classList.add('disabled');
+                break;
+            case 'hide':
+                document.getElementById('hide-spoilers-button').classList.add('disabled');
+
+                handleBlur('add');
+                break;
+            default:
+                hideSpoilers();
+                break;
+        }
+    });
+</script>
 {% endblock %}

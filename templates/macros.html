@@ -31,11 +31,8 @@
 
     {% if blur == True %}
         {% set class = class ~ " spoiler-image " %}
-
-        {% if request.cookies.get('spoilers') == 'hide' %}
-            {% set class = class ~"blur-image" %}
-        {% endif %}
     {% endif %}
+    
     <img class="{{ class }}" src="{{ url_for('static', filename=image_path) }}"/>
 {% endmacro %}
 

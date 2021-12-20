@@ -9,87 +9,6 @@
     class="img-responsive mx-auto h-100 d-block" id="current_img"
     src="{{ url_for('static', filename=image_path) }}" />
 </div>
-
-    <script>
-        document.getElementById('current_img').onclick = function clickEvent(e) {
-            let rect = e.target.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-
-            if (x < rect.width / 2) {
-                moveToPrev();
-            } else if (x > rect.width /2) {
-                moveToNext();
-            }
-        }
-
-        function setCookie(cookieName, cookieValue) {
-            document.cookie = `${cookieName}=${cookieValue}`;
-        }
-
-        function setOriginalSizeValues() {
-            element = document.getElementById('reader-container');
-
-            if (element.style['height'] == '100vh') {
-                element.style['height'] = '';
-            }
-
-            if (element.style['width'] == '100vw') {
-                element.style['width'] = '';
-            }
-        }
-
-        function setFitToHeightValues() {
-            element = document.getElementById('reader-container');
-            
-            if (element.style['width'] == '100vw') {
-                element.style['width'] = '';
-            }
-
-            if (element.style['height'] != '100vh') {
-                element.style['height'] = '100vh';
-            }
-        }
-
-        function fitToHeight() {
-            fitHeightElement = document.getElementById('fitHeightButton');
-            originalSizeElement = document.getElementById('originalSizeButton');
-
-            if (!fitHeightElement.hasAttribute('disabled')) {
-                fitHeightElement.setAttribute('disabled', '');
-                originalSizeElement.removeAttribute('disabled');
-                originalSizeElement.setAttribute('aria-pressed', 'false');
-                originalSizeElement.classList.remove('active');
-            }
-
-            setCookie('reader-image-type', 'fit-to-height');
-            setFitToHeightValues();
-        }
-
-        function originalSize() {
-            originalSizeElement = document.getElementById('originalSizeButton');
-            fitHeightElement = document.getElementById('fitHeightButton');
-
-            if (!originalSizeElement.hasAttribute('disabled')) {
-                originalSizeElement.setAttribute('disabled', '');
-                fitHeightElement.removeAttribute('disabled');
-                fitHeightElement.setAttribute('aria-pressed', 'false');
-                fitHeightElement.classList.remove('active');
-            }
-
-            setCookie('reader-image-type', 'original-size');
-            setOriginalSizeValues();
-        }
-
-        {% set request_image_type = request.cookies.get('reader-image-type') %}
-        var reader_image_type = '{{ request_image_type }}';
-
-        if (reader_image_type == 'original-size') {
-            originalSize();
-        } else if (reader_image_type == 'fit-to-height') {
-            fitToHeight();
-        }
-
-    </script>
 {% endblock %}
 
 {% block additional_element %}
@@ -125,4 +44,87 @@
             </button>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('current_img').onclick = function clickEvent(e) {
+        let rect = e.target.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+
+        if (x < rect.width / 2) {
+            moveToPrev();
+        } else if (x > rect.width /2) {
+            moveToNext();
+        }
+    }
+
+    function setOriginalSizeValues() {
+        element = document.getElementById('reader-container');
+
+        if (element.style['height'] == '100vh') {
+            element.style['height'] = '';
+        }
+
+        if (element.style['width'] == '100vw') {
+            element.style['width'] = '';
+        }
+    }
+
+    function setFitToHeightValues() {
+        element = document.getElementById('reader-container');
+        
+        if (element.style['width'] == '100vw') {
+            element.style['width'] = '';
+        }
+
+        if (element.style['height'] != '100vh') {
+            element.style['height'] = '100vh';
+        }
+    }
+
+    function fitToHeight() {
+        fitHeightElement = document.getElementById('fitHeightButton');
+        originalSizeElement = document.getElementById('originalSizeButton');
+
+        if (!fitHeightElement.hasAttribute('disabled')) {
+            fitHeightElement.setAttribute('disabled', '');
+            originalSizeElement.removeAttribute('disabled');
+            originalSizeElement.setAttribute('aria-pressed', 'false');
+            originalSizeElement.classList.remove('active');
+        }
+
+        localStorage.setItem('reader-image-type', 'fit-to-height');
+        setFitToHeightValues();
+    }
+
+    function originalSize() {
+        originalSizeElement = document.getElementById('originalSizeButton');
+        fitHeightElement = document.getElementById('fitHeightButton');
+
+        if (!originalSizeElement.hasAttribute('disabled')) {
+            originalSizeElement.setAttribute('disabled', '');
+            fitHeightElement.removeAttribute('disabled');
+            fitHeightElement.setAttribute('aria-pressed', 'false');
+            fitHeightElement.classList.remove('active');
+        }
+
+        localStorage.setItem('reader-image-type', 'original-size');
+        setOriginalSizeValues();
+    }
+
+    $(document).ready(function () {
+        let reader_image_type = localStorage.getItem('reader-image-type');
+
+        switch (reader_image_type) {
+            case 'original-size':
+                originalSize();
+                break;
+            default:
+            case 'fit-to-height':
+                fitToHeight();
+                break;
+        }
+    });
+</script>
 {% endblock %}

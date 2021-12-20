@@ -19,3 +19,6 @@
 7. Improve mobile experience
 8. Improve home page:
     * Add simple count on how many artists/mangas there are
+9. Improve preview page:
+    * Add larger thumbnail for cover art
+    * Show details of manga
