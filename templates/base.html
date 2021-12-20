@@ -18,13 +18,14 @@
     </style>
   </head>
   <body class="bg-dark text-white"> 
+      <div class="position-absolute top-50" style="z-index: 100; width: 2vw; transition: 0.35s" id="sidebarToggle">
+        <button class="btn btn-primary w-100" type="button" data-bs-toggle="collapse"
+        data-bs-target="#readerSidebar" aria-expanded="false" aria-controls="readerSidebar" id="sidebarToggleButton">
+            >>
+        </button>
+    </div>
+
     <div class="top-0 start-0 position-fixed h-100">
-      <div class="position-sticky" style="z-index: 100">
-          <button class="btn btn-primary w-100" type="button" data-bs-toggle="collapse" onclick="setExpandedCookie()"
-          data-bs-target="#readerSidebar" aria-expanded="false" aria-controls="readerSidebar">
-              Open sidebar
-          </button>
-      </div>
     
       <div id="readerSidebar"
       class="collapse-horizontal collapse position-sticky top-0 h-100 bg-black" >
@@ -53,23 +54,34 @@
     <script type="text/javascript" src="{{ url_for('static', filename="assets/js/bootstrap.bundle.min.js") }}"></script>
 
     <script>
-      function setExpandedCookie() {
-        setTimeout(() => {
-          let isActive = document.getElementById('readerSidebar').classList.contains('show');
-          localStorage.setItem('show_sidebar', `${isActive}`);
-        }, 500);
-      }
+      $("#sidebarToggleButton").click(function () {
+        let isActive = !(localStorage.getItem('show_sidebar') === 'true');
+        localStorage.setItem('show_sidebar', `${isActive}`);
+        if (isActive) {
+          $('#sidebarToggleButton').text("<<");
+          $('#sidebarToggle').css('left', '12vw');
+        } else {
+          $('#sidebarToggleButton').text(">>");
+          $('#sidebarToggle').css('left', '0');
+        }
+    });
 
       $(document).ready(function() {
         let show_sidebar = localStorage.getItem('show_sidebar');
 
         if (show_sidebar === null) {
           localStorage.setItem('show_sidebar', 'true');
+          $('#sidebarToggle').css('left', '12vw');
           document.getElementById('readerSidebar').classList.add('show');
+          $('#sidebarToggleButton').text("<<");
+        } else {
+          $('#sidebarToggle').css('left', '0');
         }
 
         if (show_sidebar == 'true') {
+          $('#sidebarToggle').css('left', '12vw');
           document.getElementById('readerSidebar').classList.add('show');
+          $('#sidebarToggleButton').text("<<");
         }
       });
     </script>
