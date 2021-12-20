@@ -2,38 +2,61 @@
     image_path, 
     button_path, 
     manga_title, 
-    pages_amount) %}
+    pages_amount,
+    read_link = read_link|default(''),
+    image_height = '45vh',
+    blur = False
+    ) %}
 <div class="col">
     <div class="card shadow-sm h-100">
-        {{ render_image(image_path) }}
+        {{ render_image(image_path, image_height, blur) }}
 
-        {{ render_manga_details(button_path, manga_title, pages_amount) }}
+        {{ render_manga_details(button_path, manga_title, pages_amount, read_link) }}
     </div>
 </div>
 {% endmacro %}
 
-{% macro render_image_link_card(image_path, image_size, link_path) %}
+{% macro render_image_link_card(image_path, image_size, link_path, blur = False) %}
 <div class="col">
     <div class="card shadow-sm h-100">
         <a href="{{ link_path }}">
-            {{ render_image(image_path, image_size) }}
+            {{ render_image(image_path, image_size, blur) }}
         </a>
     </div>
 </div>
 {% endmacro %}
 
-{% macro render_image(image_path, image_height = '45vh') %}
-<img class="card-img-top" 
-style="height: {{ image_height }}"
-src="{{ url_for('static', filename=image_path) }}"/>
+{% macro render_image(image_path, image_height = '45vh', blur = False) %}
+    {% set class = "card-img-top" %}
+
+    {% if blur == True %}
+        {% set class = class ~ " spoiler-image " %}
+
+        {% if request.cookies.get('spoilers') == 'hide' %}
+            {% set class = class ~"blur-image" %}
+        {% endif %}
+    {% endif %}
+    <img class="{{ class }}" src="{{ url_for('static', filename=image_path) }}"/>
 {% endmacro %}
 
-{% macro render_manga_details(button_path, manga_title, pages_amount) %}
+{% macro render_manga_details(button_path, manga_title, pages_amount, read_link = '') %}
 <div class="card-body bg-secondary">
-    <p class="card-title text-light ms-2">{{ manga_title }}</p>
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="{{ button_path }}" class="btn btn-dark">View</a>
-    <small class="text-white me-2">{{ pages_amount }} pages</small>
+    <div class="row">
+        <p class="card-title text-light ms-2">{{ manga_title }}</p>
+    </div>
+    <hr/>
+    <div class="row align-items-center">
+        <div class="col-3">
+            <a href="{{ button_path }}" class="btn btn-dark">View</a>
+        </div>
+        {% if read_link %}
+            <div class="col-6">
+                <a href="{{ read_link }}" class="btn btn-dark w-100">Start reading</a>
+            </div>
+        {% endif %}
+        <div class="col-3">
+            <p class="text-white me-2 text-end">{{ pages_amount }} pages</p>
+        </div>
     </div>
 </div>
 {% endmacro %}

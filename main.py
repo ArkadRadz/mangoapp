@@ -17,7 +17,8 @@ cache = Cache(app)
 
 @app.route('/')
 def home():
-    return render_template('main.html')
+    mangas = db.session.query(Manga).order_by(Manga.id.desc()).limit(3).all()
+    return render_template('main.html', mangas=mangas)
 
 @app.route('/search')
 def search():

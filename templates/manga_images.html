@@ -1,15 +1,18 @@
 {% import 'macros.html' as macro %}
 
-<div class="album py-5">
-    <div class="container">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3">
-            {% for image in images %}
+<div class="container py-5">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3">
+        {% for image in images %}
             {% set page_path = url_for('manga_page', manga_id=image.manga_id, page_number=loop.index) %}
             {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
+            {% set current_page = current_page|default(1) %}
+            {% set set_spoiler_class = False %}
 
-            {{ macro.render_image_link_card(image_path, '25vh', page_path) }}
+            {% if loop.index > 3 or current_page > 1 %}
+                {% set set_spoiler_class = True %}
+            {% endif %}
 
-            {% endfor %}
-        </div>
+            {{ macro.render_image_link_card(image_path, '25vh', page_path, set_spoiler_class) }}
+        {% endfor %}
     </div>
 </div>

@@ -8,14 +8,14 @@
 3. Improve pagination
     * improve navigate to page X button (bootstrap modal?)
     * style pagination to better suit overall color scheme
+    * add how many results per page should be visible
 4. Add metadata support
     * Add metadata scanners as plugins
     * Add support for searching for metadata
+    * Enhance search with metadata data (e.g. "title:<manga_title> contains:'tag1 tag2'")
 5. Improve project structure:
     * Remove JS from HTML into separate files
 6. Is it possible for images to be stored outside static folder?
-7. Add how many results per page should be visible
-8. Improve mobile experience
-9. Improve home page:
+7. Improve mobile experience
+8. Improve home page:
     * Add simple count on how many artists/mangas there are
-10. Blur past X page (enable yes/no)

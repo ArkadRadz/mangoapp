@@ -6,22 +6,20 @@
 <div class="container">
     {% if mangas != None %}
         Found {{ mangas.items|length * mangas.pages }} mangas:
-        <div class="album py-5">
-            <div class="container"> 
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {% for manga in mangas.items %}
-                        {% set image = manga.images|first() %}
-                        {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
-                        {% set button_path = url_for('manga_overview', id=manga.id) %}
-                        {% set pages_amount = manga.images|length %}
+        <div class="container py-5"> 
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for manga in mangas.items %}
+                    {% set image = manga.images|first() %}
+                    {% set image_path = "thumbnails" + "/" + manga.dir_name + "/" + image.path|convert_to_thumbnail %}
+                    {% set button_path = url_for('manga_overview', id=manga.id) %}
+                    {% set pages_amount = manga.images|length %}
 
-                        {{ macro.render_manga_card(
-                            image_path=image_path, 
-                            button_path=button_path, 
-                            manga_title=manga.title, 
-                            pages_amount=pages_amount) }}
-                        {% endfor %}
-                </div>
+                    {{ macro.render_manga_card(
+                        image_path=image_path, 
+                        button_path=button_path, 
+                        manga_title=manga.title, 
+                        pages_amount=pages_amount) }}
+                    {% endfor %}
             </div>
         </div>
 
