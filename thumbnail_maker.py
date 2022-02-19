@@ -34,6 +34,8 @@ def create_thumbnail_for_image(sub_element, root_path = None):
         image_thumbnail_name = sub_element.name.replace('.jpeg', '-t.jpeg')
     elif '.jpg' in sub_element.name:
         image_thumbnail_name = sub_element.name.replace('.jpg', '-t.jpg')
+    else:
+        return
 
     image = Image.open(sub_element.path)
     image_size = image.size
@@ -54,4 +56,5 @@ def create_thumbnail_for_image(sub_element, root_path = None):
     if os.path.isfile(image_path):
         return
 
-    image.save(image_path, optimize=True, quality=80)
+    image = image.convert('RGB')
+    image.save(image_path, optimize=True, quality=80, format="jpg")

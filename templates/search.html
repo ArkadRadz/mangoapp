@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        {% set search_url = url_for('search') + "?query=" + query + "?page=" %}
+        {% set search_url = url_for('search') + "?query=" + query + "&page=" %}
 
         {{ pagination.render_pagination(mangas, search_url) }}
     {% else %}

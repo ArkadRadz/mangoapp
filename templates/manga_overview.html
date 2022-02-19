@@ -8,6 +8,14 @@
             <li class="list-inline-item"><strong>{{ manga.title }}</strong></li>
             <li class="list-inline-item"><a href="{{ url_for('author_overview', id=manga_author.id) }}"> {{ manga_author.name }} </a></li>
         </ul>
+
+        {% if manga.tags != [] %}
+        <ul class="list-group list-group-horizontal justify-content-center">
+            {% for tag in manga.tags %}
+            <li class="list-group-item">{{ tag.type }}:{{ tag.value }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
     </div>
 
     {% with images=manga_images.items, current_page=manga_images.page %}

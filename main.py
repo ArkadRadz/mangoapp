@@ -3,11 +3,12 @@ from flask.helpers import url_for
 from flask_session import Session
 from werkzeug.utils import redirect
 from setup import *
-from manga import Manga
+from mangatag import Manga, Tag
 from author import Author
 from image import Image
 from manga_scanner import scan_dir_for_mangas
 from flask_caching import Cache
+import re
 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -27,11 +28,25 @@ def search():
     query = request.args.get('query')
     current_page = request.args.get('page')
 
+    results = []
+
     if current_page is None:
         current_page = 1
+    else:
+        current_page = int(current_page)
 
     if query is not None:
-        mangas = db.session.query(Manga).filter(Manga.title.like('%' + query + '%')).paginate(page=current_page, per_page=9)
+        tags_regex_search = re.findall(r"\w+|'.*'|\w+", query)
+        
+        if tags_regex_search:
+            print(current_page)
+            search_tags = [tag.replace("'", '') for tag in tags_regex_search]
+            mangas = db.session.query(Manga).join(Tag.mangas).filter(
+                Tag.value.in_(search_tags) |
+                Manga.title.like('%' + query + '%')
+                ).paginate(page=current_page, per_page=9)
+        else:
+            mangas = db.session.query(Manga).filter(Manga.title.like('%' + query + '%')).paginate(page=current_page, per_page=9)
 
     return render_template('search.html', mangas=mangas, query=query)
 
@@ -76,7 +91,6 @@ def authors(current_page):
 
 @app.route('/author/<int:id>', defaults={'current_page': 1}, strict_slashes=False)
 @app.route('/author/<int:id>/<int:current_page>')
-
 def author_overview(id, current_page):
     author = db.session.query(Author).get(id)
     author_mangas = db.session.query(Manga).filter_by(author_id=author.id).paginate(page=current_page, per_page=9)
